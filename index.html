@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Concept2Circuit – Bridge Theory & Practical</title>
+<style>
+body{
+font-family: Arial;
+margin:0;
+background:#f2f6ff;
+}
+header{
+background:#1f3c88;
+color:white;
+padding:20px;
+text-align:center;
+}
+.container{
+width:90%;
+margin:auto;
+margin-top:20px;
+}
+.card{
+background:white;
+padding:20px;
+margin-bottom:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+button{
+padding:10px 15px;
+margin:5px;
+border:none;
+background:#1f3c88;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+button:hover{
+background:#162a61;
+}
+input{
+padding:10px;
+margin:5px;
+width:250px;
+}
+.quiz button{
+display:block;
+margin-top:5px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Concept2Circuit</h1>
+<p>Bridging the Gap Between Theory and Practical Learning</p>
+</header>
+
+<!-- LOGIN PAGE -->
+<div class="container" id="loginPage">
+<div class="card">
+<h2>Student Login</h2>
+<p>Enter your college credentials</p>
+<label>Register Number</label><br>
+<input type="text" id="regno" placeholder="Example: 24NM1A0217"><br>
+<label>Password</label><br>
+<input type="password" id="password" placeholder="Enter password"><br>
+<button onclick="login()">Login</button>
+<p id="loginMsg" style="color:red;"></p>
+</div>
+</div>
+
+<!-- SUBJECT SELECTION PAGE -->
+<div class="container" id="subjectPage" style="display:none">
+<div class="card">
+<h2>Select Subject</h2>
+<button onclick="showExperiments('dc')">DC Machines</button>
+<button onclick="showExperiments('ac')">AC Machines</button>
+<button onclick="showExperiments('network')">Network Theorems / Circuits</button>
+<button onclick="showExperiments('general')">General Electrical Experiments</button>
+</div>
+</div>
+
+<!-- EXPERIMENT LIST -->
+<div class="container" id="experimentPage" style="display:none">
+<div class="card" id="experimentList">
+<h2>Select Experiment</h2>
+</div>
+</div>
+
+<!-- EXPERIMENT CONTENT -->
+<div class="container" id="contentPage" style="display:none">
+<div class="card" id="content">
+<h2>Welcome</h2>
+<p>Select an experiment to start learning.</p>
+</div>
+</div>
+
+<script>
+
+/* LOGIN FUNCTION */
+function login(){
+    let reg = document.getElementById("regno").value
+    let pass = document.getElementById("password").value
+    if(reg.startsWith("24NM1A") && pass.length >= 4){
+        document.getElementById("loginPage").style.display="none";
+        document.getElementById("subjectPage").style.display="block";
+    } else {
+        document.getElementById("loginMsg").innerText="Invalid Register Number or Password";
+    }
+}
+
+/* SUBJECT → EXPERIMENT MAPPING */
+const subjects = {
+    dc: ["DC Motor Speed Control", "DC Shunt Motor Load Test", "DC Generator OC & Load Test"],
+    ac: ["Transformer OC Test", "Transformer SC Test", "Alternator Voltage Regulation", "Induction Motor No Load Test", "Synchronous Motor Test"],
+    network: ["Superposition Theorem", "Thevenin & Norton Theorem", "KVL & KCL Verification", "Reciprocity Theorem", "Maximum Power Transfer", "Wheatstone Bridge"],
+    general: ["RLC Resonance", "Power Factor Improvement", "Instrument Transformers Test"]
+}
+
+/* EXPERIMENT DETAILS */
+const experimentsData = {
+
+    "Transformer OC Test": {
+        theory:"Open Circuit test determines core losses and magnetizing current. Conducted on primary with secondary open.",
+        procedure:`1. Connect primary to rated AC supply.
+2. Keep secondary open.
+3. Measure primary voltage (V1), current (I0), power (W0).
+4. Calculate Rc = V1^2 / W0, Xm = sqrt(I0^2 - (W0/V1)^2)
+5. Record observations.`,
+        viva:[
+            {q:"Why is OC test performed?", options:["To measure core losses","To measure copper losses","To measure efficiency","To measure speed"], ans:"To measure core losses", exp:"It measures only the core (iron) losses."},
+            {q:"Which winding is supplied during OC test?", options:["Primary","Secondary","Both","None"], ans:"Primary", exp:"Primary winding is supplied, secondary remains open."},
+            {q:"Why is secondary kept open?", options:["To ensure negligible current","To increase voltage","To measure speed","To measure torque"], ans:"To ensure negligible current", exp:"So only magnetizing current flows."},
+            {q:"What is measured during the test?", options:["Voltage, current, power","Torque","Speed","Flux"], ans:"Voltage, current, power", exp:"These values help calculate Rc and Xm."},
+            {q:"What does Xm represent?", options:["Magnetizing reactance","Core loss","Armature resistance","Flux"], ans:"Magnetizing reactance", exp:"Xm is the reactance responsible for magnetizing current."}
+        ]
+    },
+
+    "DC Motor Speed Control": {
+        theory:"Speed of DC shunt motor can be controlled by field current or armature voltage adjustments.",
+        procedure:`1. Start DC shunt motor on no load.
+2. Adjust field resistance gradually.
+3. Observe speed changes via tachometer.
+4. Record voltage, field current, speed.
+5. Plot speed vs field resistance graph.`,
+        viva:[
+            {q:"How is speed controlled in DC shunt motor?", options:["Varying field resistance or armature voltage","Changing supply frequency","Changing load only","Flux remains constant"], ans:"Varying field resistance or armature voltage", exp:"Speed changes with field or armature adjustments."},
+            {q:"What happens if field resistance increases?", options:["Speed increases","Speed decreases","Voltage increases","Torque increases"], ans:"Speed increases", exp:"Weakening flux increases motor speed."},
+            {q:"Why is armature control used?", options:["Fine adjustment under load","To reduce power","To measure current","To stop motor"], ans:"Fine adjustment under load", exp:"Armature control allows precise speed regulation under load."},
+            {q:"Which instrument measures speed?", options:["Tachometer","Voltmeter","Ammeter","Wattmeter"], ans:"Tachometer", exp:"Tachometer directly measures motor speed."},
+            {q:"Which method weakens magnetic flux?", options:["Increasing field resistance","Reducing armature voltage","Increasing load","Decreasing supply frequency"], ans:"Increasing field resistance", exp:"This reduces field current, weakening flux and increasing speed."}
+        ]
+    },
+
+    "Induction Motor No Load Test": {
+        theory:"No load test determines magnetizing current and core losses. Rotor is free running without load.",
+        procedure:`1. Apply rated voltage to motor.
+2. Keep motor mechanically free (no load).
+3. Measure line voltage, current, input power.
+4. Calculate core loss and magnetizing current.
+5. Record readings.`,
+        viva:[
+            {q:"Why is no load test conducted?", options:["To find magnetizing current","To reduce voltage","To increase speed","To stop motor"], ans:"To find magnetizing current", exp:"It helps calculate core losses and magnetizing current."},
+            {q:"What losses are measured?", options:["Core losses","Copper losses","Mechanical losses","All losses"], ans:"Core losses", exp:"Rotor current is low, so copper losses are negligible."},
+            {q:"Is rotor connected to load?", options:["No","Yes","Sometimes","Depends on voltage"], ans:"No", exp:"Rotor runs freely, no mechanical load applied."},
+            {q:"Which instruments are used?", options:["Voltmeter, Ammeter, Wattmeter","Only Voltmeter","Only Ammeter","Only Wattmeter"], ans:"Voltmeter, Ammeter, Wattmeter", exp:"All three measure input voltage, current, and power."},
+            {q:"What does I0 represent?", options:["No load current","Full load current","Short circuit current","Magnetizing current"], ans:"No load current", exp:"I0 is the current drawn under no load conditions."}
+        ]
+    },
+
+    "RLC Resonance": {
+        theory:"Resonance occurs when XL = XC. Current is maximum, impedance minimum, voltage across L and C cancel each other.",
+        procedure:`1. Connect R, L, C in series.
+2. Apply AC voltage and vary frequency.
+3. Measure current.
+4. Determine resonant frequency fr = 1/(2π√(LC))
+5. Record observations, plot current vs frequency.`,
+        viva:[
+            {q:"What is resonance?", options:["XL = XC, current max","Voltage zero","Power zero","Resistance max"], ans:"XL = XC, current max", exp:"At resonance, inductive and capacitive reactances cancel."},
+            {q:"Impedance at resonance?", options:["Minimum","Maximum","Zero","Infinite"], ans:"Minimum", exp:"Series impedance is minimum, current is maximum."},
+            {q:"Formula for fr?", options:["1/(2π√(LC))","1/(L+C)","√(LC)/2π","LC/2π"], ans:"1/(2π√(LC))", exp:"Standard resonant frequency formula."},
+            {q:"Voltage across L & C?", options:["Cancel each other","Add","Zero","Infinite"], ans:"Cancel each other", exp:"They are 180° out of phase at resonance."},
+            {q:"What increases current at resonance?", options:["Minimum impedance","Maximum resistance","Supply voltage decrease","Capacitance decrease"], ans:"Minimum impedance", exp:"Current is maximum when series impedance is minimum."}
+        ]
+    }
+
+}
+
+/* SUBJECT → EXPERIMENT LIST DISPLAY */
+function showExperiments(subject){
+    document.getElementById("subjectPage").style.display="none";
+    document.getElementById("experimentPage").style.display="block";
+    const listDiv = document.getElementById("experimentList");
+    listDiv.innerHTML="<h2>Select Experiment</h2>";
+    subjects[subject].forEach(exp=>{
+        const btn = document.createElement("button");
+        btn.innerText = exp;
+        btn.onclick = ()=> showExperiment(exp);
+        listDiv.appendChild(btn);
+    });
+}
+
+/* DISPLAY EXPERIMENT DETAILS */
+function showExperiment(expName){
+    document.getElementById("experimentPage").style.display="none";
+    document.getElementById("contentPage").style.display="block";
+    const exp = experimentsData[expName];
+    if(!exp) { 
+        document.getElementById("content").innerHTML=`<h2>${expName}</h2><p>Details not added yet.</p>`;
+        return;
+    }
+    let vivaHTML = "";
+    exp.viva.forEach((v,i)=>{
+        vivaHTML+=`
+        <div class="quiz">
+        <h4>${i+1}. ${v.q}</h4>
+        ${v.options.map(opt=>`<button onclick="checkViva(this,'${v.ans}','${v.exp}')">${opt}</button>`).join("")}
+        </div>`;
+    });
+    document.getElementById("content").innerHTML=`
+        <h2>${expName}</h2>
+        <h3>Theory</h3>
+        <p>${exp.theory}</p>
+        <h3>Procedure</h3>
+        <pre>${exp.procedure}</pre>
+        <h3>Viva Quiz</h3>
+        ${vivaHTML}
+        <p id="score" style="color:green;font-weight:bold;"></p>
+    `;
+}
+
+/* VIVA CHECK */
+let totalScore = 0;
+function checkViva(btn, correct, explanation){
+    if(btn.innerText === correct){
+        btn.style.background="green";
+        totalScore +=1;
+        document.getElementById("score").innerText=`Score: ${totalScore}`;
+        alert("Correct! ✅\nExplanation: "+explanation);
+    } else {
+        btn.style.background="red";
+        alert("Incorrect ❌\nExplanation: "+explanation);
+    }
+}
+
+
+</body>
+</html>
